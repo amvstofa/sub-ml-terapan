@@ -109,6 +109,7 @@ print(df_sampel)
 count.plot(kind='bar', title=feature);
 ```
 **Distribusi Gender:**
+
 ![Distribusi Gender](gambar/gender.png)
 **Insight:** Bedasarn distribusi di atas kategori *Male* memiliki jumlah terbanyak dengan presentase 52.2% sedangkan *Female* memiliki presentase 47.8%
 - kode ini untuk memvisualisasikan distribusi kategori obesitas
@@ -121,6 +122,7 @@ print(df_sampel)
 count.plot(kind='bar', title=feature);
 ```
 **Distribusi Obesitas:**
+
 ![Distribusi Obesitas](gambar/obesitas.png)
 **Insight**: Dapat disimpulkan bahwa bedasarkan barplot di atas Normal weight yang terbanyak dibandingkan kategori obesitas yg lain
 
@@ -160,6 +162,7 @@ sns.heatmap(data=correlation_matrix, annot=True, cmap='icefire', linewidths=0.5,
 plt.title("Correlation Matrix untuk Fitur Numerik ", size=20)
 ```
 **Visualisasi heatmap korelasi:**
+
 ![Heatmap korelasi](gambar/heatmap_korelasi.png)
 **Insight:** Terdapat korelasi yang sangat kuat antara Weight dan BMI (0.86), yang menunjukkan bahwa semakin berat seseorang, semakin tinggi nilai BMI-nya. Sementara itu, PhysicalActivityLevel memiliki korelasi yang sangat lemah terhadap semua fitur numerik lainnya. Hal ini mengindikasikan bahwa tingkat aktivitas fisik kemungkinan tidak berkaitan langsung dengan berat badan
 ## Data Preparation
