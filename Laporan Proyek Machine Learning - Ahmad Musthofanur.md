@@ -1,4 +1,4 @@
-# Laporan Proyek Machine Learning - Ahmad Musthofanur
+# Laporan Proyek Machine Learning klasifikasi Obesitas - Ahmad Musthofanur
 
 ## Domain Proyek
 
@@ -8,13 +8,15 @@ Obesitas merupakan salah satu masalah kesehatan masyarakat yang terus meningkat 
 ### Problem Statements
 
 Menjelaskan pernyataan masalah latar belakang:
-- Sejauh mana karakteristik individu seperti usia, jenis kelamin, tinggi, berat badan, BMI, dan tingkat aktivitas fisik berkontribusi dalam mengklasifikasikan kategori obesitas seseorang?.
+- Bagaimana karakteristik individu seperti usia, jenis kelamin, tinggi, berat badan, BMI, dan tingkat aktivitas fisik berkontribusi dalam mengklasifikasikan tingkat obesitas seseorang?
+- Bagaimana memilih algoritma paling efektif untuk menghasilkan predisi klasifikasi tingkat obesitas yang dapat digunakan untuk mendukung pengambilan keputusan dalam layanan kesehatan?
 
 ### Goals
 
 Menjelaskan tujuan dari pernyataan masalah:
-- Membangun model klasifikasi obesitas berdasarkan karakteristik individu menggunakan algoritma Support Vector Machine (SVM) dan K-Nearest Neighbors (KNN).
-- Mengidentifikasi algoritma yang paling efektif dalam mengklasifikasikan obesitas.
+- Mengembangkan model klasifikasi obesitas berdasarkan karakteristik individu menggunakan algoritma Support Vector Machine (SVM) dan K-Nearest Neighbors (KNN).
+- Mengidentifikasi algoritma yang paling efektif dalam mengklasifikasikan obesitas dengan membandingkan performa model SVM dan KNN berdasarkan metrik evaluasi tertentu
+
 
 ## Data Understanding
 Data yang digunakan dalam proyek ini merupakan data karakteristik individu yang mencakup variabel-variabel penting yang berkaitan dengan status obesitas. Setiap entri data merepresentasikan satu individu dan terdiri dari beberapa atribut utama, yaitu: usia, jenis kelamin, tinggi badan (dalam sentimeter), berat badan (dalam kilogram), indeks massa tubuh (BMI), tingkat aktivitas fisik, serta kategori obesitas yang telah diklasifikasikan berdasarkan nilai BMI. Data ini bersifat tabular dan disusun dalam format terstruktur, sehingga memungkinkan untuk dilakukan analisis statistik maupun eksplorasi hubungan antar variabel
@@ -38,10 +40,6 @@ Data yang digunakan dalam proyek ini merupakan data karakteristik individu yang 
 
 - ObesityCategory (Kategori Obesitas) – Merupakan klasifikasi status berat badan individu berdasarkan nilai BMI mereka. Kategori ini bisa mencakup "Underweight", "Normal weight", "Overweight", dan "Obese", meskipun distribusi tepat dari masing-masing kategori belum dijelaskan secara eksplisit.: [UCI Machine Learning Repository](https://www.kaggle.com/datasets/mrsimple07/obesity-prediction).
 
-Selanjutnya uraikanlah seluruh variabel atau fitur pada data. Sebagai contoh:  
-### Menjelaskan kode pada tiap cell
-
-
 ### Variabel-variabel pada Obesity dataset adalah sebagai berikut:
 -  **`Age` (Usia)**  
    - **Tipe data:** Integer  
@@ -63,8 +61,7 @@ Selanjutnya uraikanlah seluruh variabel atau fitur pada data. Sebagai contoh:
 
 - **`ObesityCategory` (Kategori Obesitas)**  
    - **Tipe data:** Kategorikal (`Underweight`, `Normal weight`, `Overweight`, `Obese`)  
-
-**Rubrik/Kriteria Tambahan (Opsional)**:
+## Tahap Exploratory Data Analysis (EDA)
 - Melakukan beberapa tahapan yang diperlukan untuk memahami data, contohnya teknik visualisasi data atau exploratory data analysis.
 - Kode di bawah ini untuk melihat isi 5 kolom dan baris awal pertama pada dataset
 ```python
@@ -111,7 +108,9 @@ df_sampel = pd.DataFrame({'jumlah sampel':count, 'persentase':percent.round(1)})
 print(df_sampel)
 count.plot(kind='bar', title=feature);
 ```
-
+**Distribusi Gender:**
+![Distribusi Gender](gambar/gender.png)
+**Insight:** Bedasarn distribusi di atas kategori *Male* memiliki jumlah terbanyak dengan presentase 52.2% sedangkan *Female* memiliki presentase 47.8%
 - kode ini untuk memvisualisasikan distribusi kategori obesitas
 ```python
 feature = categorical_features[1]
@@ -121,6 +120,10 @@ df_sampel = pd.DataFrame({'jumlah sampel':count, 'persentase':percent.round(1)})
 print(df_sampel)
 count.plot(kind='bar', title=feature);
 ```
+**Distribusi Obesitas:**
+![Distribusi Obesitas](gambar/obesitas.png)
+**Insight**: Dapat disimpulkan bahwa bedasarkan barplot di atas Normal weight yang terbanyak dibandingkan kategori obesitas yg lain
+
 - kode ini adalah untuk visualisasi histogram
 ```pyhton
 df.hist(bins=50, figsize=(20,15))
@@ -139,6 +142,10 @@ for col in cat_features:
     plt.tight_layout()
     plt.show()
 ```
+**Distribusi obesitas bedasarkan Gender:**
+
+![Distribusi Obesitas Bedasarkan Gender](gambar/gender_obe.png)
+**Insight:** Dari distibusi Gender di atas dapat dilihat bahwa *Male* cenderung lebih memiliki lebih banyak *Normalweight* dibanding *Female* dan *Female* lebih banyak memiliki kategori *Overweight* dibandingkan *Male*
 - Kode ini untuk membuat visualisasi pairplot pada semua kolom numerik
 ```python
 sns.pairplot(df, diag_kind = 'kde')
@@ -152,11 +159,25 @@ correlation_matrix = df[numerical_features].corr().round(2)
 sns.heatmap(data=correlation_matrix, annot=True, cmap='icefire', linewidths=0.5, )
 plt.title("Correlation Matrix untuk Fitur Numerik ", size=20)
 ```
+**Visualisasi heatmap korelasi:**
+![Heatmap korelasi](gambar/heatmap_korelasi.png)
+**Insight:** Terdapat korelasi yang sangat kuat antara Weight dan BMI (0.86), yang menunjukkan bahwa semakin berat seseorang, semakin tinggi nilai BMI-nya. Sementara itu, PhysicalActivityLevel memiliki korelasi yang sangat lemah terhadap semua fitur numerik lainnya. Hal ini mengindikasikan bahwa tingkat aktivitas fisik kemungkinan tidak berkaitan langsung dengan berat badan
 ## Data Preparation
+Pada tahapan ini, dilakukan beberapa langkah untuk mempersiapkan data agar siap digunakan dalam pembuatan model. Setiap langkah bertujuan untuk memastikan kualitas data serta kelengkapan informasi yang diperlukan. Berikut adalah teknik yang digunakan
+- Memuat dataset dari **kaggle**: tahap ini melakukan memuat dataset dari repository **kaggle** informasi dataset berupa `Age`, `Gender`, `Height`, `Weight`, `BMI`, `PhysicalActivityLevel`, `ObesityCategory`
+- **Exploratory Data Analysis (EDA)**: Melakukan tahapan ekplorasi data, sepeti pengecekan dtype, melihat jumlah baris dan kolom, pengecekan missing value, pengecekan duplikasi data, dan mendeteksi outliers menggunakan visualisasi boxplot.
+-  **Exploratory Data Analysis (EDA)** ***Univariate Analysis***: tahapan ini analisis yang hanya melibatkan satu variabel. tujuannya adalah untuk mendeskripsikan dan menganalisis distribusi dari variabel tersebut melakukan pemisahan tipe data yg berupa kategori dan juga numerikal guna memudahkan saat visualisasi bedasarkan dtypenya.
+    - melihat distribusi `Gender`
+    - melihat distribusi `ObesityCategory` 
+    - melihat distibusi fitur numerik menggunakan visualisasi Hist
+-  **Exploratory Data Analysis (EDA)** ***Univariate Analysis***: tahap ini bertujuan untuk melihat hubungan antara dua atau lebih variabel pada data
+    - melihat distribusi `ObesityCategory` bedasarkan `Gender`
+    - mebuat visualisasi pairpolot bedasarkan fitur numerik
+    - melihat visualisasi korelasi menggunakan heatmap pada fitur numerik
+- **Drop outlier pada** `Height`, `Weigth`, dan `BMI`: Pada tahapan EDA sebelumnya, pada visualisasi boxplot dapat terlihat data outlier pada `Heigth`, `Weigth`, dan juga `BMI`. ditangani menggunakan metode IQR yang mana data sebelumnya 1000 setelah melakukan penanganan data menjadi 972.
+
 -  **Encoding**: Mengubah data kategorikal (`Gender` dan `ObesityCategory`) menjadi bentuk numerik agar bisa digunakan di algoritma machine learning.
-
 -  **Split Fitur dan Target**: Memisahkan data fitur (`X`) dan target (`y`) untuk keperluan prediksi.
-
 -  **Standardisasi**: Menyamaratakan skala data numerik menggunakan `StandardScaler` agar semua fitur setara secara statistik.
 
 -  **Train-Test Split**: Membagi data menjadi 80% untuk pelatihan dan 20% untuk pengujian model.
